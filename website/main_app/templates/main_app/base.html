@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<title>{{title}}</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Online Store</title>
+		<link type="text/css" href="{% static 'main_app/css/styles.css' %}" rel="stylesheet">
+	</head>
+
+	<body>
+		<table class="table-page" border=0 cellpadding="0" cellspacing="0">
+			<tr>
+				<td valign=top>
+					<h1>Online Store</h1>
+					{% block mainmenu%}
+						<div class="header">
+							<ul id="mainmenu" class="mainmenu">
+								{% for m in menu %}
+									<li><a href="{% url m.url_name %}">{{m.title}}</a></li>
+								{% endfor %}
+								<li class="last"><a href="{% url 'register' %}">Регистрация</a> | <a href="{% url 'login' %}">Войти</a></li>
+							</ul>
+							<div class="clear"></div>
+						</div>
+					{% endblock mainmenu %}
+			
+					<table class="table-content" border=0 cellpadding="0" cellspacing="0">
+						<tr>
+							<!-- Sidebar -->
+							<td valign="top" class="sidebar">
+								<ul id="sidebar">
+									<h2>Категории</h2>
+									{% for shop, categories in categories_by_shop %}
+										<h3><a href="{{ shop.get_absolute_url }}">{{shop.name}}</a></h3>
+										{% for category in categories %}
+											<li><a href="{% url 'products' shop_slug=shop.slug cat_slug=category.slug %}">{{category.name}}</a></li>
+										{% endfor %}
+									{% endfor %}
+								</ul>		
+							</td>
+							<!-- end Sidebar -->
+							
+							<!-- Bread crumbs -->
+							<td valign="top" class="content">
+								{% block breadcrumbs %}
+								{% endblock %}
+							<!-- end Bread crumbs -->
+							
+							<!-- Block content -->
+								<div class="content-text">
+									{% block content %}
+									{% endblock %}
+								</div>
+								
+								{% if page_obj.has_other_pages %}
+									<nav class="list-pages">
+										<ul>
+											{% if page_obj.has_previous %}
+												<li class="page-num">
+													<a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+												</li>
+											{% endif %}
+
+											{% for p in paginator.page_range %}
+												{% if page_obj.number == p %}
+													<li class="page-num page-num-selected">{{p}}</li>
+												{% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+													<li class="page-num">
+														<a href="?page={{p}}">{{p}}</a>
+													</li>
+												{% endif %}
+											{% endfor %}
+
+											{% if page_obj.has_next %}
+												<li class="page-num">
+													<a href="?page={{ page_obj.next_page_number }}">&gt;</a>
+												</li>
+											{% endif %}
+										</ul>
+									</nav>
+								{% endif %}
+							<!-- end Block content -->
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td valign=top>
+					<div id="footer">
+						<p>&copy; The site was made on Django in 2023.</p>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
